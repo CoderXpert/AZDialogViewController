@@ -641,7 +641,7 @@ open class AZDialogViewController: UIViewController{
         createGesutre(for: view)
         createGesutre(for: baseView)
         createGesutre(for: container)
-        addVisualEffectView()
+        setupBackgroundBlur()
         
         baseView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(AZDialogViewController.handlePanGesture(_:))))
         
