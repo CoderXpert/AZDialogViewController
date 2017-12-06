@@ -50,6 +50,9 @@ open class AZDialogViewController: UIViewController{
     /// The primary draggable view.
     fileprivate var baseView: BaseView!
     
+    /// Bakground blur view
+    fileprivate var backgroundVisualEffectView: UIVisualEffectView?
+    
     /// Did finish animating
     fileprivate var didInitAnimation = false
     
@@ -217,6 +220,9 @@ open class AZDialogViewController: UIViewController{
     
     /// Animation duration.
     open var animationDuration: TimeInterval = 0.2
+    
+    /// Property to enable/disable background blur
+    open var blurBackground = false
     
     /// The offset of the dialog.
     open var contentOffset: CGFloat = 0.0 {
@@ -520,7 +526,9 @@ open class AZDialogViewController: UIViewController{
         if #available(iOS 11.0, *) {
             parentSafeArea = controller.view.safeAreaInsets
         }
-        
+        if blurBackground {
+            self.backgroundVisualEffectView?.isHidden = false
+        }
         controller.present(self, animated: false, completion: nil)
     }
     
@@ -545,6 +553,8 @@ open class AZDialogViewController: UIViewController{
         }else{
             super.dismiss(animated: false, completion: completion)
         }
+        
+        backgroundVisualEffectView?.isHidden = true
     }
 
     
@@ -631,6 +641,7 @@ open class AZDialogViewController: UIViewController{
         createGesutre(for: view)
         createGesutre(for: baseView)
         createGesutre(for: container)
+        addVisualEffectView()
         
         baseView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(AZDialogViewController.handlePanGesture(_:))))
         
@@ -1050,6 +1061,22 @@ open class AZDialogViewController: UIViewController{
             rightToolItem.heightAnchor.constraint(equalToConstant: 20).isActive = true
             rightToolItem.addTarget(self, action: #selector(AZDialogViewController.handleRightTool(_:)), for: .touchUpInside)
         }
+    }
+    
+    // Adding visual effect view
+    fileprivate func setupBackgroundBlur() {
+        let blurEffect = UIBlurEffect(style: .dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        
+        backgroundVisualEffectView = blurEffectView
+        view.addSubview(blurEffectView)
+        view.sendSubview(toBack: blurEffectView)
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        
+        blurEffectView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        blurEffectView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        blurEffectView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        blurEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
     
     // Setup Controller Settings
